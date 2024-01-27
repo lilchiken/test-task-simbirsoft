@@ -1,8 +1,0 @@
-setup.py
-src_lib/__init__.py
-src_lib/fibonacci_day.py
-src_lib.egg-info/PKG-INFO
-src_lib.egg-info/SOURCES.txt
-src_lib.egg-info/dependency_links.txt
-src_lib.egg-info/not-zip-safe
-src_lib.egg-info/top_level.txt
