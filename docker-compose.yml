@@ -1,0 +1,30 @@
+version: "3.5"
+
+services:
+  grid:
+    image: selenium/standalone-firefox:4.17.0-20240123
+    ports:
+      - "4444:4444"
+      - "7900:7900"
+    environment:
+      sessionTimeout: 10
+      timeout: 10
+    shm_size: "2g"
+
+  allure:
+    image: frankescobar/allure-docker-service
+    environment:
+      CHECK_RESULTS_EVERY_SECONDS: 1
+      KEEP_HISTORY: 1
+    ports:
+      - "5050:5050"
+    volumes:
+      - ${PWD}/allure-results:/app/allure-results
+      - ${PWD}/allure-reports:/app/default-reports
+
+  allure-ui:
+    image: frankescobar/allure-docker-service-ui
+    environment:
+      ALLURE_DOCKER_PUBLIC_API_URL: http://localhost:5050
+    ports:
+      - "5252:5252"

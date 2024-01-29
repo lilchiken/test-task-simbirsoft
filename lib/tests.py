@@ -5,7 +5,7 @@ from src_lib.fibonacci_day import (
     fibonacci_recursive,
     get_fibonacci_day
 )
-from tests_data import FIBONACCI_KWARGS
+from tests_consts import FIBONACCI_KWARGS
 
 
 class TestLib(unittest.TestCase):
