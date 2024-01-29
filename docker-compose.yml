@@ -28,3 +28,7 @@ services:
       ALLURE_DOCKER_PUBLIC_API_URL: http://localhost:5050
     ports:
       - "5252:5252"
+
+  tests:
+    image: .
+    command:
