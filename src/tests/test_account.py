@@ -2,13 +2,12 @@ import pytest
 import allure
 
 from src.pages.account_page import AccountPage
-from src.tests.base_test import BaseTest
 from src.utils import save_csv
 
 
 @pytest.mark.page_obj(AccountPage.__name__)
 @allure.feature('Account page')
-class TestAccount(BaseTest):
+class TestAccount:
 
     @allure.story('Транзакция')
     def test_search_transaction(self, page):

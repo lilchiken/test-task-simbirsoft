@@ -1,5 +1,5 @@
 # test-task-simbirsoft
-
+### require - python 3.8
 ## quick start:
 1. sudo docker compose -f docker-compose.yml up -d
 2. python3 -m venv venv
