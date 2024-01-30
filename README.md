@@ -8,7 +8,7 @@
 5. pip install ./lib
 6. cd src
 7. mkdir allure
-8. pytest --alluredir=allure/
-9.1. allure serve allure (предпочтительный)
-9.2.1 sudo bash ./send_results.sh
-9.2.2 Заходим на http://localhost:5252
+8. pytest --alluredir=allure/  
+9.1. allure serve allure (предпочтительный)  
+9.2.1 sudo bash ./send_results.sh  
+9.2.2 Заходим на http://localhost:5252  
