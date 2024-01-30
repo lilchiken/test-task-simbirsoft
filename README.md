@@ -9,6 +9,6 @@
 6. cd src
 7. mkdir allure
 8. pytest --alluredir=allure/
-9. Посмотреть вывод allure
+9. Посмотреть вывод allure  
     Либо allure serve allure (предпочтительный)  
     Либо sudo bash ./send_results.sh и заходим на http://localhost:5252  
