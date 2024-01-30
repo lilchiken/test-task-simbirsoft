@@ -8,7 +8,6 @@ ALLURE_SERVER='http://localhost:5050'
 PROJECT_ID='default'
 #PROJECT_ID='my-project-id'
 
-chmod 777 ALLURE_RESULTS_DIRECTORY
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 FILES_TO_SEND=$(ls -dp $DIR/$ALLURE_RESULTS_DIRECTORY/* | grep -v /$)
 if [ -z "$FILES_TO_SEND" ]; then
