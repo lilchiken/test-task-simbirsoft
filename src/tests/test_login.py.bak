@@ -1,0 +1,15 @@
+import pytest
+import allure
+
+from src.pages.login_page import LoginPage
+
+
+@pytest.mark.page_obj(LoginPage.__name__)
+@allure.feature('Login page')
+class TestLogin:
+    @allure.story('Переход на страницу авторизации пользователя')
+    def test_redirect_to_customer_login(
+            self, page: LoginPage
+    ):
+        page.go_to_page()
+        page.redirect_to_customer_login()

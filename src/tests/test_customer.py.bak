@@ -7,7 +7,9 @@ from src.pages.customer_page import CustomerPage
 @pytest.mark.page_obj(CustomerPage.__name__)
 @allure.feature('Customer page')
 class TestCustomer:
-    @allure.story('Авторизация')
-    def test_search(self, page):
+    @allure.story('Авторизация пользователя')
+    def test_login(
+            self, page: CustomerPage
+    ):
         page.go_to_page()
-        page.make_search()
+        page.make_login()

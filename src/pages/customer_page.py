@@ -12,13 +12,16 @@ if TYPE_CHECKING:
 
 
 class CustomerPageLocators:
-    LOCATOR_CUSTOMER_SELECT = (
-        By.XPATH, """//*[@id="userSelect"]"""
+    CUSTOMER_SELECT = (
+        By.ID, "userSelect"
     )
+    LOGIN_BUTTON = (
+        By.CSS_SELECTOR, "button[class='btn btn-default']"
+    )
+
+
+class CustomerPageValues:
     CUSTOMER_SELECT_VALUE = 'Harry Potter'
-    LOCATOR_LOGIN_BUTTON = (
-        By.XPATH, "/html/body/div/div/div[2]/div/form/button"
-    )
 
 
 class CustomerPage(BasePage):
@@ -31,19 +34,19 @@ class CustomerPage(BasePage):
 
     @staticmethod
     def login(driver: 'Remote', wait: 'WebDriverWait'):
-        by, value = CustomerPageLocators.LOCATOR_CUSTOMER_SELECT
+        by, value = CustomerPageLocators.CUSTOMER_SELECT
 
         wait.until(ec.presence_of_element_located((by, value)))
 
         select = Select(driver.find_element(by, value))
-        select_value = CustomerPageLocators.CUSTOMER_SELECT_VALUE
+        select_value = CustomerPageValues.CUSTOMER_SELECT_VALUE
         select.select_by_visible_text(select_value)
 
-        by, value = CustomerPageLocators.LOCATOR_LOGIN_BUTTON
+        by, value = CustomerPageLocators.LOGIN_BUTTON
         driver.find_element(by, value).click()
         wait.until(ec.url_contains('account'))
 
-    def make_search(self):
+    def make_login(self):
         self.login(self.driver, self.wait)
 
         assert self.driver.current_url == self.BASE_URL + 'account'

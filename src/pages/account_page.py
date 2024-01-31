@@ -1,37 +1,29 @@
+import re
+from typing import Iterable, Tuple
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 
 from src.pages.base_page import BasePage
 from src.pages.customer_page import CustomerPage
+from src.utils import get_time_now
 
 
 class AccountPageLocators:
-    LOCATOR_TRANSACTIONS_BUTTON = (
-        By.XPATH, "/html/body/div/div/div[2]/div/div[3]/button[1]"
-    )
-    LOCATOR_DEPOSIT_BUTTON = (
-        By.XPATH, "/html/body/div/div/div[2]/div/div[3]/button[2]"
-    )
-    LOCATOR_WITHDRAW_BUTTON = (
-        By.XPATH, "/html/body/div/div/div[2]/div/div[3]/button[3]"
-    )
+    TRANSACTION_BUTTON = (By.CSS_SELECTOR, "button[ng-click*='transactions']")
+    DEPOSIT_BUTTON = (By.CSS_SELECTOR, "button[ng-click*='deposit']")
+    WITHDRAW_BUTTON = (By.CSS_SELECTOR, "button[ng-click*='withdrawl']")
 
-    LOCATOR_FORM_BUTTON = (
-        By.XPATH, "/html/body/div/div/div[2]/div/div[4]/div/form/button"
-    )
-    LOCATOR_FORM_INPUT = (
-        By.XPATH, "/html/body/div/div/div[2]/div/div[4]/div/form/div/input"
-    )
+    FORM_BUTTON = (By.CSS_SELECTOR, "button[type='submit']")
+    FORM_INPUT = (By.CSS_SELECTOR, "input[ng-model='amount']")
 
-    LOCATOR_BALANCE_ACCOUNT = (
-        By.XPATH, "/html/body/div/div/div[2]/div/div[2]/strong[2]"
-    )
+    ACCOUNT_HEAD = (By.CSS_SELECTOR, "div.center[ng-hide='noAccount']")
 
 
 class TransactionPageLocators:
-    LOCATOR_TABLE = (By.XPATH, "/html/body/div/div/div[2]/div/div[2]/table")
-    LOCATOR_BODY_ROW = (By.CLASS_NAME, "ng-scope")
-    LOCATOR_ROW_ATTRIBUTES = (By.CLASS_NAME, "ng-binding")
+    TABLE = (By.CSS_SELECTOR, "table")
+    BODY_ROW = (By.CSS_SELECTOR, "tr.ng-scope")
+    ROW_ATTRIBUTE = (By.CSS_SELECTOR, "td.ng-binding")
 
 
 class AccountPage(BasePage):
@@ -45,7 +37,7 @@ class AccountPage(BasePage):
         self.driver.refresh()
 
     def make_search_transaction(self):
-        by, value = AccountPageLocators.LOCATOR_TRANSACTIONS_BUTTON
+        by, value = AccountPageLocators.TRANSACTION_BUTTON
 
         self.wait.until(ec.presence_of_element_located((by, value)))
         self.driver.find_element(by, value).click()
@@ -54,23 +46,23 @@ class AccountPage(BasePage):
         assert self.driver.current_url == self.BASE_URL + 'listTx'
 
     def make_search_deposit(self):
-        by, value = AccountPageLocators.LOCATOR_DEPOSIT_BUTTON
+        by, value = AccountPageLocators.DEPOSIT_BUTTON
 
         self.wait.until(ec.element_to_be_clickable((by, value)))
         self.driver.find_element(by, value).click()
 
-        by, value = AccountPageLocators.LOCATOR_FORM_BUTTON
+        by, value = AccountPageLocators.FORM_BUTTON
 
         self.wait.until(ec.element_to_be_clickable((by, value)))
         self.driver.find_element(by, value)
 
     def make_search_withdraw(self):
-        by, value = AccountPageLocators.LOCATOR_WITHDRAW_BUTTON
+        by, value = AccountPageLocators.WITHDRAW_BUTTON
 
         self.wait.until(ec.element_to_be_clickable((by, value)))
         self.driver.find_element(by, value).click()
 
-        by, value = AccountPageLocators.LOCATOR_FORM_BUTTON
+        by, value = AccountPageLocators.FORM_BUTTON
 
         self.wait.until(ec.element_to_be_clickable((by, value)))
         self.driver.find_element(by, value)
@@ -79,46 +71,75 @@ class AccountPage(BasePage):
         self.driver.refresh()
         self.make_search_deposit()
 
-        by, value = AccountPageLocators.LOCATOR_FORM_INPUT
+        by, value = AccountPageLocators.FORM_INPUT
         self.driver.find_element(by, value).send_keys(n)
 
-        by, value = AccountPageLocators.LOCATOR_FORM_BUTTON
+        by, value = AccountPageLocators.FORM_BUTTON
         self.driver.find_element(by, value).click()
+        time_now = get_time_now()
+
+        return time_now, str(n), 'Credit'
 
     def withdraw(self, n: int):
         self.driver.refresh()
         self.make_search_withdraw()
 
-        by, value = AccountPageLocators.LOCATOR_FORM_INPUT
+        by, value = AccountPageLocators.FORM_INPUT
         self.driver.find_element(by, value).send_keys(n)
 
-        by, value = AccountPageLocators.LOCATOR_FORM_BUTTON
+        by, value = AccountPageLocators.FORM_BUTTON
         self.driver.find_element(by, value).click()
+        time_now = get_time_now()
 
-    def check_transactions(self) -> list:
+        return time_now, str(n), 'Debit'
+
+    def get_account_balance(self) -> int:
         self.driver.refresh()
 
-        by, value = AccountPageLocators.LOCATOR_BALANCE_ACCOUNT
+        by, value = AccountPageLocators.ACCOUNT_HEAD
         self.wait.until(ec.presence_of_element_located((by, value)))
         element = self.driver.find_element(by, value)
 
-        assert int(element.text) == 0
+        account_head = element.text
+        childs = account_head.split(' , ')
+
+        for child in childs:
+            if 'Balance' in child:
+                child.split(' : ')
+                return int(child[-1])
+
+    def check_transactions(
+            self,
+            expected_transactions: Iterable[Tuple[str, str, str]]
+    ) -> list:
+        self.driver.refresh()
+
+        by, value = AccountPageLocators.ACCOUNT_HEAD
+        self.wait.until(ec.presence_of_element_located((by, value)))
+        self.driver.find_element(by, value)
 
         self.make_search_transaction()
 
-        by, value = TransactionPageLocators.LOCATOR_TABLE
+        by, value = TransactionPageLocators.TABLE
         self.wait.until(ec.presence_of_element_located((by, value)))
         element = self.driver.find_element(by, value)
 
-        by, value = TransactionPageLocators.LOCATOR_BODY_ROW
+        by, value = TransactionPageLocators.BODY_ROW
         transactions = element.find_elements(by, value)
 
         transaction_list = []
 
         for transaction in transactions:
-            by, value = TransactionPageLocators.LOCATOR_ROW_ATTRIBUTES
+            by, value = TransactionPageLocators.ROW_ATTRIBUTE
             date, amount, tr_type = transaction.find_elements(by, value)
 
             transaction_list.append((date.text, amount.text, tr_type.text))
+
+        for tr, expected_tr in zip(transaction_list, expected_transactions):
+            tr_date, *_ = tr
+            expected_tr_date, *_ = expected_tr
+
+            assert re.match(expected_tr_date, tr_date)
+            assert tr[1:] == expected_tr[1:]
 
         return transaction_list

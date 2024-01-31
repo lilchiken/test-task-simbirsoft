@@ -7,7 +7,7 @@ from src.conf import DriverConf, Pages
 from src_lib.fibonacci_day import get_fibonacci_day
 
 
-@pytest.fixture
+@pytest.fixture(scope='session', autouse=True)
 def driver(request) -> 'webdriver.Remote':
     driver = webdriver.Remote(
         command_executor=DriverConf.command_executor,

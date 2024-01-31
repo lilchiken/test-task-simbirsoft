@@ -5,8 +5,8 @@ from src.pages.base_page import BasePage
 
 
 class LoginPageLocators:
-    LOCATOR_CUSTOMER_BUTTON = (
-        By.XPATH, "/html/body/div/div/div[2]/div/div[1]/div[1]/button"
+    CUSTOMER_LOGIN_BUTTON = (
+        By.CSS_SELECTOR, "button[ng-click*='customer']"
     )
 
 
@@ -18,8 +18,8 @@ class LoginPage(BasePage):
     def go_to_page(self):
         self.goto(self.url)
 
-    def make_search(self):
-        by, value = LoginPageLocators.LOCATOR_CUSTOMER_BUTTON
+    def redirect_to_customer_login(self):
+        by, value = LoginPageLocators.CUSTOMER_LOGIN_BUTTON
 
         self.wait.until(ec.presence_of_element_located((by, value)))
         self.driver.find_element(by, value).click()

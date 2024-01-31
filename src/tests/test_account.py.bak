@@ -24,16 +24,26 @@ class TestAccount:
         page.go_to_page()
         page.make_search_withdraw()
 
-    @allure.story('Сценарий пополнения, вывода и просмотра транзакций')
-    def test_scenario(self, page, fibonacci_day):
+    @allure.story('Сценарий пополнения, вывода и просмотра и сверки транзакций')
+    def test_scenario(
+            self,
+            page: AccountPage,
+            fibonacci_day: int
+    ):
+        page.go_to_page()
         with allure.step('Переход на страницу'):
             page.go_to_page()
         with allure.step('Депозит'):
-            page.deposit(fibonacci_day)
+            tr_credit = page.deposit(fibonacci_day)
         with allure.step('Вывод'):
-            page.withdraw(fibonacci_day)
+            tr_debit = page.withdraw(fibonacci_day)
+        with allure.step('Сверка баланса'):
+            account_balance = page.get_account_balance()
+            assert account_balance == 0
         with allure.step('Просмотр транзакций'):
-            transactions = page.check_transactions()
+            transactions = page.check_transactions(
+                expected_transactions=(tr_credit, tr_debit)
+            )
             save_csv(data=transactions)
             allure.attach.file(
                 'allure-data.csv',
